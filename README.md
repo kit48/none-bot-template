@@ -1,4 +1,4 @@
-# none-bot-template
+# nonebot-template
 
 ## How to start
 
