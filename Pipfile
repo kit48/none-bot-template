@@ -1,0 +1,18 @@
+[[source]]
+# url = "https://pypi.org/simple"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+nb-cli = "*"
+aiohttp = "*"
+pydantic = "*"
+aiocqhttp = "*"
+
+[dev-packages]
+pylint = "*"
+autopep8 = "*"
+
+[requires]
+python_version = "3.8"
