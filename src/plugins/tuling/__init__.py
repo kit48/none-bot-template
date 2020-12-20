@@ -1,8 +1,7 @@
 import random
 from nonebot import on_message
 from nonebot.rule import to_me
-from nonebot.adapters.cqhttp import Bot, Event
-from aiocqhttp.message import escape
+from nonebot.adapters.cqhttp import Bot, Event, escape
 from typing import Sequence
 
 from .data_source import call_tuling_api
