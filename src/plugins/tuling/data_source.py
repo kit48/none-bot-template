@@ -11,6 +11,7 @@ from .config import Config
 global_config = nonebot.get_driver().config
 plugin_config = Config(**global_config.dict())
 
+
 def context_id(event: Event, *, mode: str = 'default',
                use_hash: bool = False) -> str:
     """
@@ -41,6 +42,7 @@ def context_id(event: Event, *, mode: str = 'default',
     if ctx_id and use_hash:
         ctx_id = hashlib.md5(ctx_id.encode('ascii')).hexdigest()
     return ctx_id
+
 
 async def call_tuling_api(event: Event, text: str) -> Optional[str]:
     logger.info(f'input text: {text}')

@@ -1,14 +1,14 @@
-import nonebot
 import random
-from aiocqhttp.message import escape
 from nonebot import on_message
 from nonebot.rule import to_me
 from nonebot.adapters.cqhttp import Bot, Event
+from aiocqhttp.message import escape
 from typing import Sequence
 
 from .data_source import call_tuling_api
 
 tuling = on_message(rule=to_me(), priority=999)
+
 
 def render_expression(expr,
                       *args,

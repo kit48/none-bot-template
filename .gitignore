@@ -143,3 +143,4 @@ dmypy.json
 # custom
 src/plugins/**/config.py
 .vscode
+.idea
