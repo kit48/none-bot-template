@@ -1,6 +1,7 @@
 import json
 import aiohttp
 import nonebot
+import os
 from nonebot.log import logger
 from typing import Union, List
 
@@ -11,7 +12,7 @@ global_config = nonebot.get_driver().config
 plugin_config = Config(**global_config.dict())
 
 
-async def search_images(word: str) -> Union[List[Image], None]:
+async def find_images(word: str) -> Union[List[Image], None]:
     logger.info(f'search images word: {word}')
     if not word:
         return None
@@ -42,9 +43,12 @@ async def search_images(word: str) -> Union[List[Image], None]:
                     # 如果 HTTP 响应状态码不是 200，说明调用失败
                     return None
 
-                resp_payload = json.loads(await response.text())
-                # logger.info(f'response: {resp_payload}')
+                text = await response.text()
+                # with open(f'{os.getcwd()}/text.txt', 'w', encoding='utf-8') as f:
+                #     f.write(text.replace('\n', '').replace('\r', ''))
+                resp_payload = json.loads(text, strict=False)
                 return resp_payload['data']
-    except (aiohttp.ClientError, json.JSONDecodeError, KeyError):
+    except (aiohttp.ClientError, json.JSONDecodeError, KeyError) as err:
+        logger.error(err)
         # 抛出上面任何异常，说明调用失败
         return None
