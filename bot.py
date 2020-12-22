@@ -3,7 +3,6 @@
 import nonebot
 from nonebot.adapters.cqhttp import Bot as CQHTTPBot
 
-
 # Custom your logger
 # 
 # from nonebot.log import logger, default_format
@@ -21,7 +20,6 @@ nonebot.load_builtin_plugins()
 app = nonebot.get_asgi()
 driver = nonebot.get_driver()
 driver.register_adapter("cqhttp", CQHTTPBot)
-
 
 nonebot.load_builtin_plugins()
 nonebot.load_plugins("src/plugins")
