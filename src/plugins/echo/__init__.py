@@ -8,11 +8,14 @@ echo = on_message(priority=20)
 
 echo_maps = [
     {
-        'reply': '确实',
+        'reply': '确实。',
         'rules': [
             '不会',
             '应该',
             'YYDS',
+            '我是',
+            '我就是',
+            '这就是',
             re.compile('.[^?？][?？]$')
         ]
     },
