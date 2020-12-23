@@ -18,7 +18,8 @@ async def find_images(word: str) -> Union[List[Image], None]:
         return None
 
     params = {
-        "tn": "resultjson_com",
+        # tn 字段说明：http://bitjoy.net/2015/08/13/baidu-image-downloader-python3-pyqt5-eric6-cx_freeze4/
+        "tn": "resultjson",
         "ipn": "rj",
         "is": "",
         "fp": "result",
@@ -44,9 +45,11 @@ async def find_images(word: str) -> Union[List[Image], None]:
                     return None
 
                 text = await response.text()
+                # json.loads 限制太多，反括号前有逗号都会报错
+                processed_text = text.replace('\n', '').replace('\r', '').replace(' ', '').replace(',}', '}')
                 # with open(f'{os.getcwd()}/text.txt', 'w', encoding='utf-8') as f:
-                #     f.write(text.replace('\n', '').replace('\r', ''))
-                resp_payload = json.loads(text, strict=False)
+                #     f.write(json.dumps(json.loads(processed_text, strict=False), indent=2))
+                resp_payload = json.loads(processed_text, strict=False)
                 return resp_payload['data']
     except (aiohttp.ClientError, json.JSONDecodeError, KeyError) as err:
         logger.error(err)
