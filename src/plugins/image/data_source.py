@@ -1,7 +1,7 @@
 import json
 import aiohttp
 import nonebot
-import os
+# import os
 from nonebot.log import logger
 from typing import Union, List
 
@@ -50,7 +50,8 @@ async def find_images(word: str) -> Union[List[Image], None]:
                 # with open(f'{os.getcwd()}/text.txt', 'w', encoding='utf-8') as f:
                 #     f.write(json.dumps(json.loads(processed_text, strict=False), indent=2))
                 resp_payload = json.loads(processed_text, strict=False)
-                return resp_payload['data']
+                # print('images resp_payload', resp_payload)
+                return resp_payload['data'] if resp_payload['displayNum'] > 0 else None
     except (aiohttp.ClientError, json.JSONDecodeError, KeyError) as err:
         logger.error(err)
         # 抛出上面任何异常，说明调用失败
