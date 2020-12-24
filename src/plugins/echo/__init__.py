@@ -1,10 +1,9 @@
 import re
 from nonebot import on_message
-from nonebot.rule import to_me
-from nonebot.adapters.cqhttp import Bot, Event, escape
-from typing import Sequence
+from nonebot.exception import StopPropagation
+from nonebot.adapters.cqhttp import Bot, Event
 
-echo = on_message(priority=20)
+echo = on_message(priority=20, block=False)
 
 echo_maps = [
     {
@@ -16,7 +15,7 @@ echo_maps = [
             '我是',
             '我就是',
             '这就是',
-            re.compile('.[^?？][?？]$')
+            re.compile('.是.[^?？][?？]$')
         ]
     },
     {
@@ -39,11 +38,14 @@ echo_maps = [
 async def handle_indeed(bot: Bot, event: Event, state: dict):
     message = str(event.message)
 
+    # print(event.user_id)
+    # print(event.sender)
+
     for echo_map in echo_maps:
         for rule in echo_map['rules']:
             if type(rule) is re.Pattern and rule.search(message):
-                await echo.finish(echo_map['reply'])
-                return
+                await echo.send(echo_map['reply'])
+                raise StopPropagation()
             elif type(rule) is str and rule in message:
-                await echo.finish(echo_map['reply'])
-                return
+                await echo.send(echo_map['reply'])
+                raise StopPropagation()
