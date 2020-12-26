@@ -11,7 +11,7 @@ echo_maps = [
         'rules': [
             '不会',
             '应该',
-            'YYDS',
+            re.compile('YYDS', re.IGNORECASE),
             '我是',
             '我就是',
             '这就是',
@@ -28,7 +28,7 @@ echo_maps = [
     {
         'reply': '我信了',
         'rules': [
-            'flag',
+            re.compile('flag', re.IGNORECASE),
         ]
     }
 ]
