@@ -50,7 +50,6 @@ EXPR_DONT_UNDERSTAND = (
 async def handle_tuling(bot: Bot, event: Event, state: dict):
     message = str(event.message)
 
-    # 通过封装的函数获取图灵机器人的回复
     reply = await call_tuling_api(event, message)
     if reply:
         await tuling.finish(escape(reply))

@@ -49,7 +49,6 @@ async def call_tuling_api(event: Event, text: str) -> Optional[str]:
     if not text:
         return None
 
-    # 构造请求数据
     payload = {
         'reqType': 0,
         'perception': {
@@ -68,11 +67,9 @@ async def call_tuling_api(event: Event, text: str) -> Optional[str]:
         payload['userInfo']['groupId'] = group_unique_id
 
     try:
-        # 使用 aiohttp 库发送最终的请求
         async with aiohttp.ClientSession() as sess:
             async with sess.post(plugin_config.API_URL, json=payload) as response:
                 if response.status != 200:
-                    # 如果 HTTP 响应状态码不是 200，说明调用失败
                     return None
 
                 resp_payload = json.loads(await response.text())
@@ -83,5 +80,4 @@ async def call_tuling_api(event: Event, text: str) -> Optional[str]:
                             # 返回文本类型的回复
                             return result['values']['text']
     except (aiohttp.ClientError, json.JSONDecodeError, KeyError):
-        # 抛出上面任何异常，说明调用失败
         return None
