@@ -11,7 +11,7 @@ echo_maps = [
         'rules': [
             '不会',
             '应该',
-            re.compile('YYDS', re.IGNORECASE),
+            re.compile('.*YYDS.*', re.IGNORECASE),
             '我是',
             '我就是',
             '这就是',
