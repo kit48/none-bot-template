@@ -7,6 +7,22 @@ from typing import Union
 from .typing import VideoInfo
 
 
+async def get_target_link(short_link: str) -> str:
+    if not short_link:
+        return None
+    try:
+        async with aiohttp.ClientSession() as sess:
+            async with sess.get(short_link) as response:
+                if response.status != 200:
+                    # 如果 HTTP 响应状态码不是 302，说明没有重定向
+                    return None
+                return str(response.url)
+    except (aiohttp.ClientError, json.JSONDecodeError, KeyError) as err:
+        logger.error(err)
+        # 抛出上面任何异常，说明调用失败
+        return None
+
+
 async def get_video_info(bv: str) -> Union[VideoInfo, None]:
     if not bv:
         return None
