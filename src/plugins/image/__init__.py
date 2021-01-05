@@ -1,6 +1,6 @@
 import random
 from nonebot import on_command
-from nonebot.adapters.cqhttp import Bot, Event, Message, exception
+from nonebot.adapters.cqhttp import Bot, Event, Message, exception, GroupMessageEvent
 from nonebot.log import logger
 
 from .data_source import find_images
@@ -9,17 +9,17 @@ image = on_command(cmd="img", aliases={"搜图"}, priority=10)
 
 
 def get_message(event: Event, url: str):
-    at_segment = {"type": "at", "data": {"qq": event.user_id}}
+    at_segment = {"type": "at", "data": {"qq": event.get_user_id()}}
     image_segment = {"type": "image", "data": {"file": url}}
 
-    if event.detail_type == 'group':
+    if isinstance(event, GroupMessageEvent):
         return Message([image_segment, at_segment])
     return Message(image_segment)
 
 
 @image.handle()
 async def handle_image(bot: Bot, event: Event, state: dict):
-    message = str(event.message)
+    message = str(event.get_message())
 
     images = await find_images(message)
     # TODO 使用抛出异常的方式统一处理，避免使用独立的异常处理逻辑

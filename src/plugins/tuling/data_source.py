@@ -2,7 +2,7 @@ import json
 import aiohttp
 import nonebot
 import hashlib
-from nonebot.adapters.cqhttp import Event
+from nonebot.adapters.cqhttp import Event, GroupMessageEvent
 from nonebot.log import logger
 from typing import Optional
 
@@ -26,18 +26,9 @@ def context_id(event: Event, *, mode: str = 'default',
     """
     ctx_id = ''
     if mode == 'default':
-        if event.group_id:
-            ctx_id = f'/group/{event.group_id}'
-        if event.user_id:
-            ctx_id += f'/user/{event.user_id}'
-    elif mode == 'group':
-        if event.group_id:
-            ctx_id = f'/group/{event.group_id}'
-        elif event.user_id:
-            ctx_id = f'/user/{event.user_id}'
-    elif mode == 'user':
-        if event.user_id:
-            ctx_id = f'/user/{event.user_id}'
+        ctx_id += f'/user/{event.get_user_id()}'
+    elif mode == 'group' and isinstance(event, GroupMessageEvent):
+        ctx_id = f'/group/{event.group_id}'
 
     if ctx_id and use_hash:
         ctx_id = hashlib.md5(ctx_id.encode('ascii')).hexdigest()

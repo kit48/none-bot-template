@@ -48,7 +48,7 @@ EXPR_DONT_UNDERSTAND = (
 
 @tuling.handle()
 async def handle_tuling(bot: Bot, event: Event, state: dict):
-    message = str(event.message)
+    message = str(event.get_message())
 
     reply = await call_tuling_api(event, message)
     if reply:

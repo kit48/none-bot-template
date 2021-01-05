@@ -1,7 +1,7 @@
 import re
 from nonebot import on_message
 from nonebot.exception import StopPropagation
-from nonebot.adapters.cqhttp import Bot, Event
+from nonebot.adapters.cqhttp import Bot, MessageEvent
 
 echo = on_message(priority=20, block=False)
 
@@ -35,11 +35,12 @@ echo_maps = [
 
 
 @echo.handle()
-async def handle_indeed(bot: Bot, event: Event, state: dict):
-    message = str(event.message)
+async def handle_indeed(bot: Bot, event: MessageEvent, state: dict):
+    message = str(event.get_message())
 
-    # print(event.user_id)
-    # print(event.sender)
+    # print('user id', event.user_id)
+    # print('message id', event.message_id)
+    # print('bot config', bot.config)
 
     for echo_map in echo_maps:
         for rule in echo_map['rules']:
