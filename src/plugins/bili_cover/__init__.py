@@ -15,7 +15,7 @@ short_reg = re.compile(r'https://b23.tv/[0-9a-zA-Z]+')
 
 @bili_cover.handle()
 async def handle_image(bot: Bot, event: Event, state: dict):
-    message = str(event.message)
+    message = str(event.get_message())
 
     short_result = short_reg.findall(message)
     short_links = list(set(short_result))
