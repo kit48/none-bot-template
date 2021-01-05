@@ -9,6 +9,7 @@ nb-cli = "*"
 aiohttp = "*"
 pydantic = "*"
 asyncstdlib = "*"
+nonebot2 = "*"
 
 [dev-packages]
 pylint = "*"
