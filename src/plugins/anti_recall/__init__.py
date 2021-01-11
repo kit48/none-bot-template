@@ -18,7 +18,7 @@ async def handle_anti_recall(bot: Bot, event: Union[GroupRecallNoticeEvent, Frie
     message_detail = await bot.get_msg(message_id=event.message_id)
 
     user_info = await get_user_info(message_detail, bot)
-    user_text = ' '.join(filter(lambda x: x, user_info + ['撤回了：\n']))
+    user_text = ' '.join(user_info + ['撤回了：\n'])
 
     user_segment = {"type": "text", 'data': {'text': user_text}}
     message_segment = message_detail['message']
@@ -35,6 +35,6 @@ async def get_user_info(message: Dict[str, Any], bot: Bot):
     group_id = message['group_id']
     if group_id:
         group_name = (await bot.get_group_info(group_id=group_id))['group_name']
-        nickname_in_group = (await bot.get_group_member_info(group_id=group_id, user_id=user_id))
-        return [nickname_in_group, group_name]
-    return [nickname]
+        nickname_in_group = (await bot.get_group_member_info(group_id=group_id, user_id=user_id))['card']
+        return [f'@{nickname_in_group}', f'#{group_name}']
+    return [f'@{nickname}']
