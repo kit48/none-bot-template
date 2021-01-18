@@ -144,3 +144,5 @@ dmypy.json
 src/plugins/**/config.py
 .vscode
 .idea
+.env.dev
+.env.prod
