@@ -1,10 +1,13 @@
 import random
+import json
+import aiohttp
 from nonebot import on_message
 from nonebot.rule import to_me
-from nonebot.adapters.cqhttp import Bot, Event, escape
-from typing import Sequence
+from nonebot.adapters.cqhttp import Bot, Event, escape, GroupMessageEvent
+from nonebot.log import logger
+from typing import Sequence, Union
 
-from .data_source import call_tuling_api
+from src.plugins.kit48.config import API_ROOT
 
 tuling = on_message(rule=to_me(), priority=999)
 
@@ -50,10 +53,32 @@ EXPR_DONT_UNDERSTAND = (
 async def handle_tuling(bot: Bot, event: Event, state: dict):
     message = str(event.get_message())
 
-    reply = await call_tuling_api(event, message)
+    reply = await get_data(message, event.get_user_id(),
+                           event.group_id if isinstance(event, GroupMessageEvent) else None)
     if reply:
         await tuling.finish(escape(reply))
     else:
         # 如果调用失败，或者它返回的内容我们目前处理不了，发送无法获取图灵回复时的「表达」
         # 这里的 render_expression() 函数会将一个「表达」渲染成一个字符串消息
         await tuling.reject(render_expression(EXPR_DONT_UNDERSTAND))
+
+
+async def get_data(message: str, user_id: str, group_id: Union[str, None]):
+    params = {
+        "message": message,
+        "userId": user_id,
+    }
+
+    if group_id:
+        params['groupId'] = group_id
+
+    try:
+        async with aiohttp.ClientSession() as sess:
+            async with sess.get(f"{API_ROOT}/tuling", params=params) as response:
+                if response.status != 200:
+                    return None
+
+                return await response.text()
+    except (aiohttp.ClientError, json.JSONDecodeError, KeyError) as err:
+        logger.error(err)
+        return None

@@ -1,11 +1,13 @@
 import re
+import json
 from nonebot import on_message
 from nonebot.adapters.cqhttp import Bot, Event, Message, exception
 from nonebot.log import logger
 from nonebot.exception import StopPropagation
-from asyncstdlib.builtins import map as amap, list as alist
+# from asyncstdlib.builtins import map as amap, list as alist
+import aiohttp
 
-from .data_source import get_video_info, get_target_link
+from src.plugins.kit48.config import API_ROOT
 
 bili_cover = on_message(priority=10, block=False)
 
@@ -19,17 +21,16 @@ async def handle_image(bot: Bot, event: Event, state: dict):
 
     short_result = short_reg.findall(message)
     short_links = list(set(short_result))
-    # https://stackoverflow.com/questions/62846735/how-to-use-await-inside-map-function
-    makeup_links = await alist(amap(get_target_link, short_links))
+    # # https://stackoverflow.com/questions/62846735/how-to-use-await-inside-map-function
+    # makeup_links = await alist(amap(get_target_link, short_links))
 
-    result = reg.findall(message + ' '.join(makeup_links))
-    links = list(filter(lambda link: type(link) == str, list(set(result))))
-    bvs = list(map(lambda link: link.split('/')[-1].replace('BV', ''), links))
-    for bv in bvs:
-        info = await get_video_info(bv)
+    result = reg.findall(message)
+    links = list(filter(lambda link: type(link) == str, list(set(result)))) + short_links
+    for link in links:
+        info = await get_data(link)
         if info and 'url' in info:
             text = [
-                # f'bv: {bv}',
+                f"{link}",
                 f"UP: {info['up']}",
                 f"标题: {info['title']}"
             ]
@@ -47,6 +48,19 @@ async def handle_image(bot: Bot, event: Event, state: dict):
                 }])
             await bili_cover.send(message)
         else:
-            await bili_cover.send(f'未找到 bv {bv} 相关信息')
+            await bili_cover.send(f'未找到 {link} 相关信息')
     if len(links):
         raise StopPropagation
+
+
+async def get_data(url: str):
+    try:
+        async with aiohttp.ClientSession() as sess:
+            async with sess.get(f"{API_ROOT}/bilibili/covers", params={"url": url}) as response:
+                if response.status != 200:
+                    return None
+
+                return json.loads(await response.text())
+    except (aiohttp.ClientError, json.JSONDecodeError, KeyError) as err:
+        logger.error(err)
+        return None

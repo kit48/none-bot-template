@@ -1,9 +1,11 @@
 import random
+import json
 from nonebot import on_command
 from nonebot.adapters.cqhttp import Bot, Event, Message, exception, GroupMessageEvent
 from nonebot.log import logger
+import aiohttp
 
-from .data_source import find_images
+from src.plugins.kit48.config import API_ROOT
 
 image = on_command(cmd="img", aliases={"搜图"}, priority=10)
 
@@ -21,7 +23,7 @@ def get_message(event: Event, url: str):
 async def handle_image(bot: Bot, event: Event, state: dict):
     message = str(event.get_message())
 
-    images = await find_images(message)
+    images = await get_data(message)
     # TODO 使用抛出异常的方式统一处理，避免使用独立的异常处理逻辑
     if type(images) is list and len(images):
         logger.info(f'[{message}] images count: {len(images)}')
@@ -43,3 +45,16 @@ async def handle_image(bot: Bot, event: Event, state: dict):
     else:
         logger.info(f'[{message}] no images')
         await image.finish(f'未找到 [{message}] 相关图片 _(:3J∠)_')
+
+
+async def get_data(word: str):
+    try:
+        async with aiohttp.ClientSession() as sess:
+            async with sess.get(f"{API_ROOT}/images/baidu", params={"word": word}) as response:
+                if response.status != 200:
+                    return None
+
+                return json.loads(await response.text())
+    except (aiohttp.ClientError, json.JSONDecodeError, KeyError) as err:
+        logger.error(err)
+        return None
